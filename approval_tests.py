@@ -31,13 +31,16 @@ def main():
 
 		if not os.path.isfile(path_to_expected):
 			print('Failed ' + test_name + ': Could not find expected usfm. Looked for ' + path_to_expected)
+			failed = True
 		elif not os.path.isfile(path_to_actual):
 			print('Failed ' + test_name + ': Could not find actual usfm. Looked for ' + path_to_actual)
+			failed = True
 		else:
 			expected = read_all_text(path_to_expected)
 			actual = read_all_text(path_to_actual)
 			if expected.strip() != actual.strip():
-				print('Failed ' + test_name + ': expected != actual. Expected: ' + expected + ' actual ' + actual)
+				print('Failed ' + test_name + ': expected != actual.')
+				failed = True
 
 	print('Succeeded' if not failed else 'Failed')
 
