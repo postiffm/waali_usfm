@@ -29,6 +29,7 @@ def main():
 		elif event == 'end':
 			pass
 			# todo: handle paragraphs under the text element
+			
 
 	bible_items = model_post_processor.process(bible_items)
 
