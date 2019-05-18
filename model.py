@@ -56,3 +56,6 @@ class ParallelPassageReference:
 
 	def __str__(self):
 		return f"\\r {self.text}"
+
+def get_printable_items(bible_items):
+	return [b for b in bible_items if not isinstance(b, FootNote) and not isinstance(b, PageHeader)]

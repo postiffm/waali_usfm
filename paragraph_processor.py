@@ -6,7 +6,7 @@ from utils2 import *
 def process(book_name_set, bible_items, elem):
 	matching_patterns = [p for p in patterns if p.Matches(book_name_set, bible_items, elem)]
 	if len(matching_patterns) != 1:
-		print('uh oh')
+		print('Expected 1 matching pattern but found: ' + str(len(matching_patterns)))
 	else:
 		matching_patterns[0].Act(book_name_set, bible_items, elem)
 
@@ -26,4 +26,4 @@ class PatternBook(object):
 		bible_items.append(Book(get_text_rec(elem).strip(), elem))
 
 
-patterns = [PatterBlank]
+patterns = [PatternBlank, PatternBook]

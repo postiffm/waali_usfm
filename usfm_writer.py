@@ -2,7 +2,7 @@ import os
 from model import *
 
 def write(bible_items):
-	printable_items = [b for b in bible_items if not isinstance(b, FootNote) and not isinstance(b, PageHeader)]
+	printable_items = get_printable_items(bible_items)
 
 	usfm_dir = '../usfm_out_rev2'
 
