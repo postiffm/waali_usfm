@@ -1,5 +1,5 @@
 
-book_info = {
+books = {
 		"'Munpiilee Gbangu": { "id" : "GEN", "file_name" : "01_Genesis.usfm" },
 		"'Yiibu Gbangu": { "id" : "EXO", "file_name" : "02_Exodus.usfm" },
 		"'Liivai Gbangu": { "id" : "LEV", "file_name" : "03_Leviticus.usfm" },
@@ -67,3 +67,13 @@ book_info = {
 		"'Juud Gbangu": { "id" : "JUD", "file_name" : "65_Jude.usfm" },
 		"'Yesu 'Kristo Yeli'yuoruu Gbangu": { "id" : "REV", "file_name" : "66_Revelation.usfm" },
 	}
+
+def get_book_name_set():
+
+	book_names = list(books.keys())
+
+	book_name_set = set()
+	for bn in book_names:
+		book_name_set.add(bn.strip())
+
+	return book_name_set

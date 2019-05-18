@@ -1,5 +1,5 @@
 
-from book_info import book_info
+import book_info
 
 class Book:
 	def __init__(self, name, elem):
@@ -7,7 +7,7 @@ class Book:
 		self.elem = elem
 
 	def __str__(self):
-		book_id = book_info[self.name]['id']
+		book_id = book_info.books[self.name]['id']
 		return f"""\\id {book_id}
 \\h {self.name}
 \\mt {self.name}

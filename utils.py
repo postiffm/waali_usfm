@@ -1,7 +1,6 @@
 
 import re
 from model import *
-from book_info import book_info
 from globals import *
 
 def is_int(s):
@@ -12,9 +11,6 @@ def is_int(s):
 		return True
 	except ValueError:
 		return False
-
-def get_book_names():
-	return list(book_info.keys())
 
 def has_style(elem, styles):
 	for attribName, attribVal in elem.attrib.items():
