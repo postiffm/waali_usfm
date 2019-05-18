@@ -52,3 +52,6 @@ def has_style(elem, styles):
 def normalize_space(text):
 	r = re.compile(r'(\s+)')
 	return r.sub(' ', text)
+
+def is_white_space(text):
+	return text == None or text == '' or text.isspace()

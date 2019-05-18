@@ -7,12 +7,13 @@ def process(book_name_set, bible_items, elem):
 	matching_patterns = [p for p in patterns if p.Matches(book_name_set, bible_items, elem)]
 	if len(matching_patterns) != 1:
 		print('Expected 1 matching pattern but found: ' + str(len(matching_patterns)))
+		#print(get_text_rec(elem))
 	else:
 		matching_patterns[0].Act(book_name_set, bible_items, elem)
 
 class PatternBlank(object):
 	def Matches(book_name_set, bible_items, elem):
-		return get_text_rec(elem).isspace()
+		return is_white_space(get_text_rec(elem))
 
 	def Act(book_name_set, bible_items, elem):
 		pass
@@ -49,6 +50,7 @@ class PatternVerseWithNumber(object):
 			not PatternChapter.Matches(book_name_set, bible_items, elem)
 
 	def Act(book_name_set, bible_items, elem):
+		# todo: handle Psalms style verse 1's where the v 1 has a number and follows a heading.
 		elem_text_rec = get_text_rec(elem)
 		verse_num = get_verse_num(elem_text_rec)
 		verse_text = elem_text_rec[len(str(verse_num)):].strip()
