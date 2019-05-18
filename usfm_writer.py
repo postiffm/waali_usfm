@@ -1,5 +1,6 @@
 import os
 from model import *
+from book_info import books
 
 def write(bible_items):
 	printable_items = get_printable_items(bible_items)
@@ -14,6 +15,6 @@ def write(bible_items):
 		if isinstance(item, Book):
 			if f:
 				f.close()
-			f = open(usfm_dir + '/' + book_info[item.name]['file_name'], 'w')
+			f = open(usfm_dir + '/' + books[item.name]['file_name'], 'w')
 		f.write(str(item) + '\n')
 	f.close()

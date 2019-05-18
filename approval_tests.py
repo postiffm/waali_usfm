@@ -1,5 +1,5 @@
 import os
-import waali_parser2_2 as parser
+import waali_parser as parser
 from model import get_printable_items
 
 def write(bible_items, path):

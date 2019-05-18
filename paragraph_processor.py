@@ -1,6 +1,6 @@
 
 from model import *
-from utils2 import *
+from utils import *
 
 
 def process(book_name_set, bible_items, elem):

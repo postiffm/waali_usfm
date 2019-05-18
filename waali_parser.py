@@ -1,9 +1,6 @@
 import xml.etree.ElementTree as ET
 
 import book_info
-from model import *
-from globals import *
-from utils import *
 import model_post_processor
 import usfm_writer
 import paragraph_processor
