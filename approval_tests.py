@@ -26,7 +26,7 @@ def main():
 		path_to_expected = './tests/expected/' + test_name + '.usfm'
 		path_to_actual = './tests/actual/' + test_name + '.usfm'
 
-		bible_items = parser.parse('./tests/' + f)
+		bible_items, errors = parser.parse('./tests/' + f)
 		write(bible_items, path_to_actual)
 
 		if not os.path.isfile(path_to_expected):
@@ -41,6 +41,10 @@ def main():
 			if expected.strip() != actual.strip():
 				print('Failed ' + test_name + ': expected != actual.')
 				failed = True
+
+		if len(errors) > 0:
+			failed = True
+			print('Failed ' + test_name + ': parse errors: ' + "\n    ".join([str(e) for e in errors]))
 
 	print('Succeeded' if not failed else 'Failed')
 

@@ -11,21 +11,27 @@ def parse(content_xml_file):
 	bible_items = []
 	book_name_set = book_info.get_book_name_set()
 
+	errors = []
 	depth = 0
 	for event, elem in ET.iterparse(content_xml_file, events = ['end', 'start']):
 		if event == 'start':
 			depth += 1
 		elif event == 'end':
 			if elem.tag.endswith('}p') and depth == 4:
-				paragraph_processor.process(book_name_set, bible_items, elem)
+				succeeded, error = paragraph_processor.process(book_name_set, bible_items, elem)
+				if not succeeded:
+					errors.append(error)
 			depth -= 1
-	return bible_items
+	return bible_items, errors
 
 def main():
 
-	bible_items = model_post_processor.process(parse('../content.xml'))
+	bible_items, errors = model_post_processor.process(parse('../content.xml'))
 
 	usfm_writer.write(bible_items)
+
+	for e in errors:
+		print(str(e))
 
 
 if __name__ == "__main__":
