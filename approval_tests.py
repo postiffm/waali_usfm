@@ -1,9 +1,9 @@
 import os
 import waali_parser as parser
-from model import get_printable_items
+from model import *
 
 def write(bible_items, path):
-	printable_items = get_printable_items(bible_items)
+	printable_items = [item for item in bible_items if isinstance(item, Printable)]
 	f = open(path, 'w')
 	for item in printable_items:
 		f.write(str(item) + '\n')

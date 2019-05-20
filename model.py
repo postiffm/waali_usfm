@@ -1,7 +1,10 @@
 
 import book_info
 
-class Book:
+class Printable(object):
+	pass
+
+class Book(Printable):
 	def __init__(self, name, elem):
 		self.name = name
 		self.elem = elem
@@ -13,7 +16,7 @@ class Book:
 \\mt {self.name}
 \\toc3 {book_id}"""
 
-class Heading:
+class Heading(Printable):
 	def __init__(self, text, elem):
 		self.text = text
 		self.elem = elem
@@ -21,7 +24,7 @@ class Heading:
 	def __str__(self):
 		return f'\\s {self.text}'
 
-class Chapter:
+class Chapter(Printable):
 	def __init__(self, number, elem):
 		self.number = number
 		self.elem = elem
@@ -29,7 +32,7 @@ class Chapter:
 	def __str__(self):
 		return f'\\c {self.number}'
 
-class Verse:
+class Verse(Printable):
 	def __init__(self, number, text, elem):
 		self.number = number
 		self.text = text
@@ -49,13 +52,10 @@ class PageHeader:
 	def __init__(self, elem):
 		self.elem = elem
 
-class ParallelPassageReference:
+class ParallelPassageReference(Printable):
 	def __init__(self, text, elem):
 		self.elem = elem
 		self.text = text
 
 	def __str__(self):
 		return f"\\r {self.text}"
-
-def get_printable_items(bible_items):
-	return [b for b in bible_items if not isinstance(b, FootNote) and not isinstance(b, PageHeader)]

@@ -6,7 +6,7 @@ from utils import *
 def process(book_name_set, bible_items, elem):
 	matching_patterns = [p for p in patterns if p.Matches(book_name_set, bible_items, elem)]
 	if len(matching_patterns) != 1:
-		return False, 'Expected 1 matching pattern but found: ' + str(len(matching_patterns))
+		return False, 'Expected 1 matching pattern but found: ' + str(len(matching_patterns)) + "Elem text: " + get_text_rec(elem) + ". Patterns: " + ", ".join([str(p) for p in matching_patterns])
 		#print(get_text_rec(elem))
 	else:
 		matching_patterns[0].Act(book_name_set, bible_items, elem)

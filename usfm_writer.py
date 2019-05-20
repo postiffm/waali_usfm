@@ -3,7 +3,7 @@ from model import *
 from book_info import books
 
 def write(bible_items):
-	printable_items = get_printable_items(bible_items)
+	printable_items = [item for item in bible_items if isinstance(item, Printable)]
 
 	usfm_dir = '../usfm_out_rev2'
 
