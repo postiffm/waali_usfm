@@ -55,3 +55,6 @@ def normalize_space(text):
 
 def is_white_space(text):
 	return text == None or text == '' or text.isspace()
+
+def concat_lines(line1, line2):
+	return line1.strip() + ' ' + line2.strip()

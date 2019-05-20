@@ -47,6 +47,7 @@ class PatternFirstVerseWithoutNumber(object):
 class PatternVerseWithNumber(object):
 	def Matches(book_name_set, bible_items, elem):
 		return starts_with_verse_num(get_text_rec(elem)) and \
+		    not PatternChapterInSpan.Matches(book_name_set, bible_items, elem) and \
 			not PatternChapter.Matches(book_name_set, bible_items, elem)
 
 	def Act(book_name_set, bible_items, elem):
@@ -57,5 +58,28 @@ class PatternVerseWithNumber(object):
 		verse_text = normalize_space(verse_text)
 		bible_items.append(Verse(verse_num, verse_text, elem))
 
+class PatternHeading(object):
+	def Matches(book_name_set, bible_items, elem):
+		return not PatternBlank.Matches(book_name_set, bible_items, elem) and \
+			has_heading_style(elem)
+
+	def Act(book_name_set, bible_items, elem):
+		text = normalize_space(get_text_rec(elem)).strip()
+		if isinstance(last(bible_items), Heading):
+			last(bible_items).text = concat_lines(last(bible_items).text, text)
+		else:
+			bible_items.append(Heading(text, elem))
+
+class PatternChapterInSpan(object):
+	def Matches(book_name_set, bible_items, elem):
+		children = elem.getchildren()
+		return len(children) == 2 and has_style(children[0], 'T5') and is_int(children[0].text)
+	def Act(book_name_set, bible_items, elem):
+		children = elem.getchildren()
+		bible_items.append(Chapter(int(children[0].text), elem))
+		bible_items.append(Verse(1, normalize_space(get_text_rec(children[1])), elem))
+
+
 patterns = [PatternBlank, PatternBook, PatternChapter,
-	PatternFirstVerseWithoutNumber, PatternVerseWithNumber]
+	PatternFirstVerseWithoutNumber, PatternVerseWithNumber, PatternHeading,
+	PatternChapterInSpan]
