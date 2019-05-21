@@ -23,16 +23,3 @@ def parse(content_xml_file):
 					errors.append(error)
 			depth -= 1
 	return bible_items, errors
-
-def main():
-
-	bible_items, errors = model_post_processor.process(parse('../content.xml'))
-
-	usfm_writer.write(bible_items)
-
-	for e in errors:
-		print(str(e))
-
-
-if __name__ == "__main__":
-	main()

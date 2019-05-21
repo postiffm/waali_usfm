@@ -2,10 +2,8 @@ import os
 from model import *
 from book_info import books
 
-def write(bible_items):
+def write(bible_items, usfm_dir):
 	printable_items = [item for item in bible_items if isinstance(item, Printable)]
-
-	usfm_dir = '../usfm_out_rev2'
 
 	if not os.path.exists(usfm_dir):
 		os.mkdir(usfm_dir)
