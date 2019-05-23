@@ -9,7 +9,7 @@ import paragraph_processor
 
 def parse(content_xml_file):
 	bible_items = []
-	book_name_set = book_info.get_book_name_set()
+	book_name_set = book_info.book_name_set
 
 	errors = []
 	depth = 0

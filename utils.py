@@ -1,6 +1,7 @@
 import re
 from sugar import *
 from model import *
+from book_info import *
 
 def get_text_rec(elem):
 	parts = []
@@ -59,5 +60,18 @@ def is_white_space(text):
 def concat_lines(line1, line2):
 	return line1.strip() + ' ' + line2.strip()
 
-def last_item_is(bible_items, item_type):
-	return len(bible_items) > 0 and isinstance(last(bible_items), item_type)
+def last_printable_item_is(bible_items, item_type):
+	last_printable = last_printable_item(bible_items)
+	return last_printable != None and isinstance(last_printable, item_type)
+
+def last_printable_item(bible_items):
+	for item in reversed(bible_items):
+		if isinstance(item, Printable):
+			return item
+	return None
+
+def is_page_header(text):
+	if text == None:
+		return False
+	x = re.search('^(?P<book_name>[\'a-zA-Z\\s]+)[\\d-]+', text)
+	return x != None and x.group('book_name').strip() in book_info.book_name_set

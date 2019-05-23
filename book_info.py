@@ -77,3 +77,5 @@ def get_book_name_set():
 		book_name_set.add(bn.strip())
 
 	return book_name_set
+
+book_name_set = get_book_name_set()

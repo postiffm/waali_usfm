@@ -63,12 +63,13 @@ class PatternVerseWithNumber(object):
 class PatternVerseContinuation(object):
 	def Matches(book_name_set, bible_items, elem):
 		return not PatternBlank.Matches(book_name_set, bible_items, elem) and \
+			not PatternPageHeader.Matches(book_name_set, bible_items, elem) and \
 			not has_heading_style(elem) and \
 			not PatternVerseWithNumber.Matches(book_name_set, bible_items, elem) and \
-			last_item_is(bible_items, Verse)
+			last_printable_item_is(bible_items, Verse)
 
 	def Act(book_name_set, bible_items, elem):
-		last_verse = last(bible_items)
+		last_verse = last_printable_item(bible_items)
 		concat_with_last_verse = lambda t : concat_lines(last_verse.text, t)
 		last_verse.text = pipe(elem, get_text_rec, normalize_space, concat_with_last_verse)
 
@@ -93,7 +94,12 @@ class PatternChapterInSpan(object):
 		bible_items.append(Chapter(int(children[0].text), elem))
 		bible_items.append(Verse(1, normalize_space(get_text_rec(children[1])), elem))
 
+class PatternPageHeader(object):
+	def Matches(book_name_set, bible_items, elem):
+		return is_page_header(pipe(elem, get_text_rec, normalize_space))
+	def Act(book_name_set, bible_items, elem):
+		bible_items.append(PageHeader(elem))
 
 patterns = [PatternBlank, PatternBook, PatternChapter,
 	PatternFirstVerseWithoutNumber, PatternVerseWithNumber, PatternHeading,
-	PatternChapterInSpan, PatternVerseContinuation]
+	PatternChapterInSpan, PatternVerseContinuation, PatternPageHeader]
