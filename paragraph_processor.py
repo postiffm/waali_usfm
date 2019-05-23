@@ -1,7 +1,7 @@
 
 from model import *
 from utils import *
-
+from sugar import *
 
 def process(book_name_set, bible_items, elem):
 	matching_patterns = [p for p in patterns if p.Matches(book_name_set, bible_items, elem)]
@@ -60,6 +60,18 @@ class PatternVerseWithNumber(object):
 		verse_text = normalize_space(verse_text)
 		bible_items.append(Verse(verse_num, verse_text, elem))
 
+class PatternVerseContinuation(object):
+	def Matches(book_name_set, bible_items, elem):
+		return not PatternBlank.Matches(book_name_set, bible_items, elem) and \
+			not has_heading_style(elem) and \
+			not PatternVerseWithNumber.Matches(book_name_set, bible_items, elem) and \
+			last_item_is(bible_items, Verse)
+
+	def Act(book_name_set, bible_items, elem):
+		last_verse = last(bible_items)
+		concat_with_last_verse = lambda t : concat_lines(last_verse.text, t)
+		last_verse.text = pipe(elem, get_text_rec, normalize_space, concat_with_last_verse)
+
 class PatternHeading(object):
 	def Matches(book_name_set, bible_items, elem):
 		return not PatternBlank.Matches(book_name_set, bible_items, elem) and \
@@ -84,4 +96,4 @@ class PatternChapterInSpan(object):
 
 patterns = [PatternBlank, PatternBook, PatternChapter,
 	PatternFirstVerseWithoutNumber, PatternVerseWithNumber, PatternHeading,
-	PatternChapterInSpan]
+	PatternChapterInSpan, PatternVerseContinuation]

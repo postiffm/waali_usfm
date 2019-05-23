@@ -58,3 +58,6 @@ def is_white_space(text):
 
 def concat_lines(line1, line2):
 	return line1.strip() + ' ' + line2.strip()
+
+def last_item_is(bible_items, item_type):
+	return len(bible_items) > 0 and isinstance(last(bible_items), item_type)
