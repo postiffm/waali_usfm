@@ -1,6 +1,7 @@
 import os
 import waali_parser as parser
 from model import *
+from sugar import *
 
 def write(bible_items, path):
 	printable_items = [item for item in bible_items if isinstance(item, Printable)]
@@ -26,7 +27,8 @@ def main():
 		path_to_expected = './tests/expected/' + test_name + '.usfm'
 		path_to_actual = './tests/actual/' + test_name + '.usfm'
 
-		bible_items, errors = parser.parse('./tests/' + f)
+		bible_items, errors = parser.extract_model('./tests/' + f)
+
 		write(bible_items, path_to_actual)
 
 		if not os.path.isfile(path_to_expected):

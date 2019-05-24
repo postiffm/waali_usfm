@@ -75,3 +75,19 @@ def is_page_header(text):
 		return False
 	x = re.search('^(?P<book_name>[\'a-zA-Z\\s]+)[\\d-]+', text)
 	return x != None and x.group('book_name').strip() in book_info.book_name_set
+
+
+def starts_with_footnote_ref(text):
+	x = re.search('^\\d+:\\d+', text)
+	return x != None
+
+def get_footnote_ref(text):
+	x = re.search('^(?P<ref>\\d+:\\d+)', text)
+	if x == None:
+		return None, None
+	split = x.group('ref').split(':')
+	return int(split[0]), int(split[1])
+
+def get_footnote_text(elem):
+	return normalize_space(' '.join([t for t in elem.itertext()][1:]))
+

@@ -4,7 +4,7 @@ import model_post_processor
 
 def main():
 
-	bible_items, errors = model_post_processor.process(parser.parse('content_indented_no_noise.xml'))
+	bible_items, errors = parser.extract_model('content_indented_no_noise.xml')
 
 	usfm_writer.write(bible_items, '../usfm_out_rev2')
 
