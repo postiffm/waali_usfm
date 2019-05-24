@@ -64,6 +64,8 @@ class PatternVerseContinuation(object):
 	def Matches(book_name_set, bible_items, elem):
 		return not PatternBlank.Matches(book_name_set, bible_items, elem) and \
 			not PatternPageHeader.Matches(book_name_set, bible_items, elem) and \
+			not PatternStartOfFootNotes.Matches(book_name_set, bible_items, elem) and \
+			not PatternFootNote.Matches(book_name_set, bible_items, elem) and \
 			not has_heading_style(elem) and \
 			not PatternVerseWithNumber.Matches(book_name_set, bible_items, elem) and \
 			last_printable_item_is(bible_items, Verse)
@@ -100,6 +102,21 @@ class PatternPageHeader(object):
 	def Act(book_name_set, bible_items, elem):
 		bible_items.append(PageHeader(elem))
 
+class PatternStartOfFootNotes(object):
+	def Matches(book_name_set, bible_items, elem):
+		return get_text_rec(elem).strip() == '*________'
+	def Act(book_name_set, bible_items, elem):
+		pass
+
+class PatternFootNote(object):
+	def Matches(book_name_set, bible_items, elem):
+		return starts_with_footnote_ref(get_text_rec(elem))
+	def Act(book_name_set, bible_items, elem):
+		footnote_chapter, footnote_verse = get_footnote_ref(get_text_rec(elem))
+		footnote_text = get_footnote_text(elem)
+		bible_items.append(FootNote(footnote_chapter, footnote_verse, footnote_text, elem))
+
 patterns = [PatternBlank, PatternBook, PatternChapter,
 	PatternFirstVerseWithoutNumber, PatternVerseWithNumber, PatternHeading,
-	PatternChapterInSpan, PatternVerseContinuation, PatternPageHeader]
+	PatternChapterInSpan, PatternVerseContinuation, PatternPageHeader,
+	PatternStartOfFootNotes, PatternFootNote]
