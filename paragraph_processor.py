@@ -66,6 +66,7 @@ class PatternVerseContinuation(object):
 			not PatternPageHeader.Matches(book_name_set, bible_items, elem) and \
 			not PatternStartOfFootNotes.Matches(book_name_set, bible_items, elem) and \
 			not PatternFootNote.Matches(book_name_set, bible_items, elem) and \
+			not PatternChapter.Matches(book_name_set, bible_items, elem) and \
 			not has_heading_style(elem) and \
 			not PatternVerseWithNumber.Matches(book_name_set, bible_items, elem) and \
 			last_printable_item_is(bible_items, Verse)
@@ -108,6 +109,7 @@ class PatternStartOfFootNotes(object):
 	def Act(book_name_set, bible_items, elem):
 		pass
 
+# todo: test that this works with multiple footnotes.
 class PatternFootNote(object):
 	def Matches(book_name_set, bible_items, elem):
 		return starts_with_footnote_ref(get_text_rec(elem))
