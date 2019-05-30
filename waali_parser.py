@@ -5,6 +5,7 @@ import usfm_writer
 import paragraph_processor
 from model import *
 from sugar import *
+from utils import format_cross_ref
 
 # https://ubsicap.github.io/usfm/
 
@@ -62,9 +63,18 @@ def hook_up_footnotes(bible_items):
 				pass
 	return bible_items
 
+def format_cross_references(bible_items):
+	current_chapter = None
+	for item in bible_items:
+		if isinstance(item, Chapter):
+			current_chapter = item.number
+		if isinstance(item, Verse):
+			item.text = format_cross_ref(item.text, f'{current_chapter}:{item.number}')
+	return bible_items
+
 	#todo: make sure to handle range footnotes. e.g. 45:10-11 
 
 def extract_model(content_xml_file):
 	bible_items, errors = parse(content_xml_file)
-	bible_items = pipe(bible_items, add_chapter_1_to_single_chapter_books, hook_up_footnotes)
+	bible_items = pipe(bible_items, add_chapter_1_to_single_chapter_books, hook_up_footnotes, format_cross_references)
 	return bible_items, errors
