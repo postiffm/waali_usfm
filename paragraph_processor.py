@@ -109,7 +109,6 @@ class PatternStartOfFootNotes(object):
 	def Act(book_name_set, bible_items, elem):
 		pass
 
-# todo: test that this works with multiple footnotes.
 class PatternFootNote(object):
 	def Matches(book_name_set, bible_items, elem):
 		return starts_with_footnote_ref(get_text_rec(elem))
@@ -118,7 +117,15 @@ class PatternFootNote(object):
 		footnote_text = get_footnote_text(elem)
 		bible_items.append(FootNote(footnote_chapter, footnote_verse, footnote_text, elem))
 
+class PatternParallelPassage(object):
+	def Matches(book_name_set, bible_items, elem):
+		return is_parallel_passage_ref(get_text_rec(elem).strip())
+	def Act(book_name_set, bible_items, elem):
+		return bible_items.append(ParallelPassageReference(get_parallel_passage_ref(get_text_rec(elem).strip()), elem))
+
+# todo: what's this? a parallel reference in a footnote? ('Yiibu G. 25:7; Soribu G. 11:7)
+
 patterns = [PatternBlank, PatternBook, PatternChapter,
 	PatternFirstVerseWithoutNumber, PatternVerseWithNumber, PatternHeading,
 	PatternChapterInSpan, PatternVerseContinuation, PatternPageHeader,
-	PatternStartOfFootNotes, PatternFootNote]
+	PatternStartOfFootNotes, PatternFootNote, PatternParallelPassage]

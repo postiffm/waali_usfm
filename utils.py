@@ -91,3 +91,10 @@ def get_footnote_ref(text):
 def get_footnote_text(elem):
 	return normalize_space(' '.join([t for t in elem.itertext()][1:]))
 
+
+def is_parallel_passage_ref(elem_text):
+	return get_parallel_passage_ref(elem_text) != None
+
+def get_parallel_passage_ref(elem_text):
+	m = re.match(r"^\(\s*(['\w\s]+G\.\s*\d+:\d+(-\d+)?\s*;?)+\s*\)$", elem_text)
+	return m and m.string
