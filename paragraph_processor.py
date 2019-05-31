@@ -60,15 +60,20 @@ class PatternVerseWithNumber(object):
 		verse_text = normalize_space(verse_text)
 		bible_items.append(Verse(verse_num, verse_text, elem))
 
+def is_verse_text_with_no_verse_number(book_name_set, bible_items, elem):
+	return not PatternBlank.Matches(book_name_set, bible_items, elem) and \
+		not PatternPageHeader.Matches(book_name_set, bible_items, elem) and \
+		not PatternStartOfFootNotes.Matches(book_name_set, bible_items, elem) and \
+		not PatternFootNote.Matches(book_name_set, bible_items, elem) and \
+		not PatternChapter.Matches(book_name_set, bible_items, elem) and \
+		not has_heading_style(elem) and \
+		not PatternVerseWithNumber.Matches(book_name_set, bible_items, elem) and \
+		not PatternChapterInSpan.Matches(book_name_set, bible_items, elem) and \
+		not PatternParallelPassage.Matches(book_name_set, bible_items, elem)
+
 class PatternVerseContinuation(object):
 	def Matches(book_name_set, bible_items, elem):
-		return not PatternBlank.Matches(book_name_set, bible_items, elem) and \
-			not PatternPageHeader.Matches(book_name_set, bible_items, elem) and \
-			not PatternStartOfFootNotes.Matches(book_name_set, bible_items, elem) and \
-			not PatternFootNote.Matches(book_name_set, bible_items, elem) and \
-			not PatternChapter.Matches(book_name_set, bible_items, elem) and \
-			not has_heading_style(elem) and \
-			not PatternVerseWithNumber.Matches(book_name_set, bible_items, elem) and \
+		return is_verse_text_with_no_verse_number(book_name_set, bible_items, elem) and \
 			last_printable_item_is(bible_items, Verse)
 
 	def Act(book_name_set, bible_items, elem):
@@ -76,17 +81,25 @@ class PatternVerseContinuation(object):
 		concat_with_last_verse = lambda t : concat_lines(last_verse.text, t)
 		last_verse.text = pipe(elem, get_text_rec, normalize_space, concat_with_last_verse)
 
+def add_or_append_heading(bible_items, elem):
+	text = get_normalized_text(elem)
+	if isinstance(last(bible_items), Heading):
+		last(bible_items).text = concat_lines(last(bible_items).text, text)
+	else:
+		bible_items.append(Heading(text, elem))
+
 class PatternHeading(object):
 	def Matches(book_name_set, bible_items, elem):
 		return not PatternBlank.Matches(book_name_set, bible_items, elem) and \
 			has_heading_style(elem)
-
 	def Act(book_name_set, bible_items, elem):
-		text = normalize_space(get_text_rec(elem)).strip()
-		if isinstance(last(bible_items), Heading):
-			last(bible_items).text = concat_lines(last(bible_items).text, text)
-		else:
-			bible_items.append(Heading(text, elem))
+		add_or_append_heading(bible_items, elem)
+
+class PatternHeadingInSpan(object):
+	def Matches(book_name_set, bible_items, elem):
+		return any(elem.getchildren(), lambda child: has_heading_style(child) and has_equivalent_text(elem, child))
+	def Act(book_name_set, bible_items, elem):
+		add_or_append_heading(bible_items, elem)
 
 class PatternChapterInSpan(object):
 	def Matches(book_name_set, bible_items, elem):
@@ -121,11 +134,30 @@ class PatternParallelPassage(object):
 	def Matches(book_name_set, bible_items, elem):
 		return is_parallel_passage_ref(get_text_rec(elem).strip())
 	def Act(book_name_set, bible_items, elem):
-		return bible_items.append(ParallelPassageReference(get_parallel_passage_ref(get_text_rec(elem).strip()), elem))
+		bible_items.append(ParallelPassageReference(get_parallel_passage_ref(get_text_rec(elem).strip()), elem))
+
+class PatternParagraph(object):
+	def Matches(book_name_set, bible_items, elem):
+		return is_verse_text_with_no_verse_number(book_name_set, bible_items, elem) and \
+			last_printable_item_is(bible_items, Heading)
+	def Act(book_name_set, bible_items, elem):
+		text = normalize_space(get_text_rec(elem)).strip()
+		bible_items.append(Paragraph(text, elem)) 
+
+class PatternParagraphContinuation(object):
+	def Matches(book_name_set, bible_items, elem):
+		return is_verse_text_with_no_verse_number(book_name_set, bible_items, elem) and \
+			last_printable_item_is(bible_items, Paragraph) and \
+			not PatternHeadingInSpan.Matches(book_name_set, bible_items, elem)
+	def Act(book_name_set, bible_items, elem):
+		text = normalize_space(get_text_rec(elem)).strip()
+		p = last_printable_item(bible_items)
+		p.text = concat_lines(p.text, text)
 
 # todo: what's this? a parallel reference in a footnote? ('Yiibu G. 25:7; Soribu G. 11:7)
 
 patterns = [PatternBlank, PatternBook, PatternChapter,
-	PatternFirstVerseWithoutNumber, PatternVerseWithNumber, PatternHeading,
+	PatternFirstVerseWithoutNumber, PatternVerseWithNumber, PatternHeading, PatternHeadingInSpan,
 	PatternChapterInSpan, PatternVerseContinuation, PatternPageHeader,
-	PatternStartOfFootNotes, PatternFootNote, PatternParallelPassage]
+	PatternStartOfFootNotes, PatternFootNote, PatternParallelPassage, PatternParagraph,
+	PatternParagraphContinuation]

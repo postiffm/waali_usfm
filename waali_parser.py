@@ -76,5 +76,6 @@ def format_cross_references(bible_items):
 
 def extract_model(content_xml_file):
 	bible_items, errors = parse(content_xml_file)
+	# Could footnotes contain cross references and should such cross references also be foratted?
 	bible_items = pipe(bible_items, add_chapter_1_to_single_chapter_books, hook_up_footnotes, format_cross_references)
 	return bible_items, errors

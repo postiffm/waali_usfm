@@ -59,3 +59,11 @@ class ParallelPassageReference(Printable):
 
 	def __str__(self):
 		return f"\\r {self.text}"
+
+class Paragraph(Printable):
+	def __init__(self, text, elem):
+		self.elem = elem
+		self.text = text
+
+	def __str__(self):
+		return rf"\p {self.text}"
