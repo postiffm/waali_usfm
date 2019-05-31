@@ -69,7 +69,9 @@ def is_verse_text_with_no_verse_number(book_name_set, bible_items, elem):
 		not has_heading_style(elem) and \
 		not PatternVerseWithNumber.Matches(book_name_set, bible_items, elem) and \
 		not PatternChapterInSpan.Matches(book_name_set, bible_items, elem) and \
-		not PatternParallelPassage.Matches(book_name_set, bible_items, elem)
+		not PatternParallelPassage.Matches(book_name_set, bible_items, elem) and \
+		not PatternHeadingInSpan.Matches(book_name_set, bible_items, elem) and \
+		not PatternBook.Matches(book_name_set, bible_items, elem)
 
 class PatternVerseContinuation(object):
 	def Matches(book_name_set, bible_items, elem):
@@ -97,7 +99,8 @@ class PatternHeading(object):
 
 class PatternHeadingInSpan(object):
 	def Matches(book_name_set, bible_items, elem):
-		return any(elem.getchildren(), lambda child: has_heading_style(child) and has_equivalent_text(elem, child))
+		return any(elem.getchildren(), lambda child: has_heading_style(child) and has_equivalent_text(elem, child)) and \
+			not is_int(get_normalized_text(elem)) # not a chapter in a span.
 	def Act(book_name_set, bible_items, elem):
 		add_or_append_heading(bible_items, elem)
 

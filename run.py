@@ -1,6 +1,5 @@
 import waali_parser as parser
 import usfm_writer
-import model_post_processor
 
 def main():
 
