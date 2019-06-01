@@ -108,3 +108,9 @@ def get_normalized_text(elem):
 
 def has_equivalent_text(elem1, elem2):
 	return get_normalized_text(elem1) == get_normalized_text(elem2)
+
+def is_psalm_number(text):
+	return re.match(r"'Yienii \d+", text)
+
+def get_psalm_number(text):
+	return int(re.search(r"'Yienii (?P<num>\d+)", text).group('num'))

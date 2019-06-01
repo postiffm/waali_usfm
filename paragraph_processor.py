@@ -71,7 +71,8 @@ def is_verse_text_with_no_verse_number(book_name_set, bible_items, elem):
 		not PatternChapterInSpan.Matches(book_name_set, bible_items, elem) and \
 		not PatternParallelPassage.Matches(book_name_set, bible_items, elem) and \
 		not PatternHeadingInSpan.Matches(book_name_set, bible_items, elem) and \
-		not PatternBook.Matches(book_name_set, bible_items, elem)
+		not PatternBook.Matches(book_name_set, bible_items, elem) and \
+		not PatternPsalmNumber.Matches(book_name_set, bible_items, elem)
 
 class PatternVerseContinuation(object):
 	def Matches(book_name_set, bible_items, elem):
@@ -157,10 +158,16 @@ class PatternParagraphContinuation(object):
 		p = last_printable_item(bible_items)
 		p.text = concat_lines(p.text, text)
 
+class PatternPsalmNumber(object):
+	def Matches(book_name_set, bible_items, elem):
+		return is_psalm_number(get_normalized_text(elem))
+	def Act(book_name_set, bible_items, elem):
+		bible_items.append(Chapter(get_psalm_number(get_normalized_text(elem)), elem))
+
 # todo: what's this? a parallel reference in a footnote? ('Yiibu G. 25:7; Soribu G. 11:7)
 
 patterns = [PatternBlank, PatternBook, PatternChapter,
 	PatternFirstVerseWithoutNumber, PatternVerseWithNumber, PatternHeading, PatternHeadingInSpan,
 	PatternChapterInSpan, PatternVerseContinuation, PatternPageHeader,
 	PatternStartOfFootNotes, PatternFootNote, PatternParallelPassage, PatternParagraph,
-	PatternParagraphContinuation]
+	PatternParagraphContinuation, PatternPsalmNumber]
