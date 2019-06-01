@@ -4,7 +4,8 @@ from utils import *
 from sugar import *
 
 def process(book_name_set, bible_items, elem):
-	matching_patterns = [p for p in patterns if p.Matches(book_name_set, bible_items, elem)]
+	pattern_match_cache = {}
+	matching_patterns = [p for p in patterns if p.Matches(book_name_set, bible_items, elem, pattern_match_cache)]
 	if len(matching_patterns) != 1:
 		return False, 'Expected 1 matching pattern but found: ' + str(len(matching_patterns)) + "Elem text: " + get_text_rec(elem) + ". Patterns: " + ", ".join([str(p) for p in matching_patterns])
 		#print(get_text_rec(elem))
@@ -13,8 +14,22 @@ def process(book_name_set, bible_items, elem):
 
 	return True, None
 
+def cached_match(matcher, *matcher_args, **matcher_kwargs):
+	cache = matcher_args[3] if len(matcher_args) == 4 else matcher_kwargs['cache']
+	if matcher in cache:
+		return cache[matcher]
+	result = matcher(*matcher_args, **matcher_kwargs)
+	cache[matcher] = result
+	return result
+
+def cached(matcher):
+	def decorator(*args, **kwargs):
+		return cached_match(matcher, *args, **kwargs)
+	return decorator
+
 class PatternBlank(object):
-	def Matches(book_name_set, bible_items, elem):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
 		return is_white_space(get_text_rec(elem))
 
 	def Act(book_name_set, bible_items, elem):
@@ -22,23 +37,26 @@ class PatternBlank(object):
 
 
 class PatternBook(object):
-	def Matches(book_name_set, bible_items, elem):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
 		return get_text_rec(elem) in book_name_set
 
 	def Act(book_name_set, bible_items, elem):
 		bible_items.append(Book(get_text_rec(elem).strip(), elem))
 
 class PatternChapter(object):
-	def Matches(book_name_set, bible_items, elem):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
 		return is_int(get_text_rec(elem)) and child_count(elem) == 0
 
 	def Act(book_name_set, bible_items, elem):
 		bible_items.append(Chapter(int(get_text_rec(elem)), elem))
 
 class PatternFirstVerseWithoutNumber(object):
-	def Matches(book_name_set, bible_items, elem):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
 		elem_text_rec = get_text_rec(elem)
-		return not PatternBlank.Matches(book_name_set, bible_items, elem) and \
+		return not PatternBlank.Matches(book_name_set, bible_items, elem, cache) and \
 		    not has_heading_style(elem) and \
 		    not starts_with_verse_num(elem_text_rec) and \
 		    has_chapter_or_chapter_header_pattern(bible_items)
@@ -47,10 +65,11 @@ class PatternFirstVerseWithoutNumber(object):
 		bible_items.append(Verse(1, get_text_rec(elem), elem))
 
 class PatternVerseWithNumber(object):
-	def Matches(book_name_set, bible_items, elem):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
 		return starts_with_verse_num(get_text_rec(elem)) and \
-		    not PatternChapterInSpan.Matches(book_name_set, bible_items, elem) and \
-			not PatternChapter.Matches(book_name_set, bible_items, elem)
+		    not PatternChapterInSpan.Matches(book_name_set, bible_items, elem, cache) and \
+			not PatternChapter.Matches(book_name_set, bible_items, elem, cache)
 
 	def Act(book_name_set, bible_items, elem):
 		# todo: handle Psalms style verse 1's where the v 1 has a number and follows a heading.
@@ -60,23 +79,25 @@ class PatternVerseWithNumber(object):
 		verse_text = normalize_space(verse_text)
 		bible_items.append(Verse(verse_num, verse_text, elem))
 
-def is_verse_text_with_no_verse_number(book_name_set, bible_items, elem):
-	return not PatternBlank.Matches(book_name_set, bible_items, elem) and \
-		not PatternPageHeader.Matches(book_name_set, bible_items, elem) and \
-		not PatternStartOfFootNotes.Matches(book_name_set, bible_items, elem) and \
-		not PatternFootNote.Matches(book_name_set, bible_items, elem) and \
-		not PatternChapter.Matches(book_name_set, bible_items, elem) and \
+@cached
+def is_verse_text_with_no_verse_number(book_name_set, bible_items, elem, cache):
+	return not PatternBlank.Matches(book_name_set, bible_items, elem, cache) and \
+		not PatternPageHeader.Matches(book_name_set, bible_items, elem, cache) and \
+		not PatternStartOfFootNotes.Matches(book_name_set, bible_items, elem, cache) and \
+		not PatternFootNote.Matches(book_name_set, bible_items, elem, cache) and \
+		not PatternChapter.Matches(book_name_set, bible_items, elem, cache) and \
 		not has_heading_style(elem) and \
-		not PatternVerseWithNumber.Matches(book_name_set, bible_items, elem) and \
-		not PatternChapterInSpan.Matches(book_name_set, bible_items, elem) and \
-		not PatternParallelPassage.Matches(book_name_set, bible_items, elem) and \
-		not PatternHeadingInSpan.Matches(book_name_set, bible_items, elem) and \
-		not PatternBook.Matches(book_name_set, bible_items, elem) and \
-		not PatternPsalmNumber.Matches(book_name_set, bible_items, elem)
+		not PatternVerseWithNumber.Matches(book_name_set, bible_items, elem, cache) and \
+		not PatternChapterInSpan.Matches(book_name_set, bible_items, elem, cache) and \
+		not PatternParallelPassage.Matches(book_name_set, bible_items, elem, cache) and \
+		not PatternHeadingInSpan.Matches(book_name_set, bible_items, elem, cache) and \
+		not PatternBook.Matches(book_name_set, bible_items, elem, cache) and \
+		not PatternPsalmNumber.Matches(book_name_set, bible_items, elem, cache)
 
 class PatternVerseContinuation(object):
-	def Matches(book_name_set, bible_items, elem):
-		return is_verse_text_with_no_verse_number(book_name_set, bible_items, elem) and \
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
+		return is_verse_text_with_no_verse_number(book_name_set, bible_items, elem, cache) and \
 			last_printable_item_is(bible_items, Verse)
 
 	def Act(book_name_set, bible_items, elem):
@@ -92,21 +113,24 @@ def add_or_append_heading(bible_items, elem):
 		bible_items.append(Heading(text, elem))
 
 class PatternHeading(object):
-	def Matches(book_name_set, bible_items, elem):
-		return not PatternBlank.Matches(book_name_set, bible_items, elem) and \
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
+		return not PatternBlank.Matches(book_name_set, bible_items, elem, cache) and \
 			has_heading_style(elem)
 	def Act(book_name_set, bible_items, elem):
 		add_or_append_heading(bible_items, elem)
 
 class PatternHeadingInSpan(object):
-	def Matches(book_name_set, bible_items, elem):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
 		return any(elem.getchildren(), lambda child: has_heading_style(child) and has_equivalent_text(elem, child)) and \
 			not is_int(get_normalized_text(elem)) # not a chapter in a span.
 	def Act(book_name_set, bible_items, elem):
 		add_or_append_heading(bible_items, elem)
 
 class PatternChapterInSpan(object):
-	def Matches(book_name_set, bible_items, elem):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
 		children = elem.getchildren()
 		return len(children) == 2 and has_style(children[0], 'T5') and is_int(children[0].text)
 	def Act(book_name_set, bible_items, elem):
@@ -115,19 +139,22 @@ class PatternChapterInSpan(object):
 		bible_items.append(Verse(1, normalize_space(get_text_rec(children[1])), elem))
 
 class PatternPageHeader(object):
-	def Matches(book_name_set, bible_items, elem):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
 		return is_page_header(pipe(elem, get_text_rec, normalize_space))
 	def Act(book_name_set, bible_items, elem):
 		bible_items.append(PageHeader(elem))
 
 class PatternStartOfFootNotes(object):
-	def Matches(book_name_set, bible_items, elem):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
 		return get_text_rec(elem).strip() == '*________'
 	def Act(book_name_set, bible_items, elem):
 		pass
 
 class PatternFootNote(object):
-	def Matches(book_name_set, bible_items, elem):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
 		return starts_with_footnote_ref(get_text_rec(elem))
 	def Act(book_name_set, bible_items, elem):
 		footnote_chapter, footnote_verse = get_footnote_ref(get_text_rec(elem))
@@ -135,31 +162,35 @@ class PatternFootNote(object):
 		bible_items.append(FootNote(footnote_chapter, footnote_verse, footnote_text, elem))
 
 class PatternParallelPassage(object):
-	def Matches(book_name_set, bible_items, elem):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
 		return is_parallel_passage_ref(get_text_rec(elem).strip())
 	def Act(book_name_set, bible_items, elem):
 		bible_items.append(ParallelPassageReference(get_parallel_passage_ref(get_text_rec(elem).strip()), elem))
 
 class PatternParagraph(object):
-	def Matches(book_name_set, bible_items, elem):
-		return is_verse_text_with_no_verse_number(book_name_set, bible_items, elem) and \
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
+		return is_verse_text_with_no_verse_number(book_name_set, bible_items, elem, cache) and \
 			last_printable_item_is(bible_items, Heading)
 	def Act(book_name_set, bible_items, elem):
 		text = normalize_space(get_text_rec(elem)).strip()
 		bible_items.append(Paragraph(text, elem)) 
 
 class PatternParagraphContinuation(object):
-	def Matches(book_name_set, bible_items, elem):
-		return is_verse_text_with_no_verse_number(book_name_set, bible_items, elem) and \
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
+		return is_verse_text_with_no_verse_number(book_name_set, bible_items, elem, cache) and \
 			last_printable_item_is(bible_items, Paragraph) and \
-			not PatternHeadingInSpan.Matches(book_name_set, bible_items, elem)
+			not PatternHeadingInSpan.Matches(book_name_set, bible_items, elem, cache)
 	def Act(book_name_set, bible_items, elem):
 		text = normalize_space(get_text_rec(elem)).strip()
 		p = last_printable_item(bible_items)
 		p.text = concat_lines(p.text, text)
 
 class PatternPsalmNumber(object):
-	def Matches(book_name_set, bible_items, elem):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
 		return is_psalm_number(get_normalized_text(elem))
 	def Act(book_name_set, bible_items, elem):
 		bible_items.append(Chapter(get_psalm_number(get_normalized_text(elem)), elem))
