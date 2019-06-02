@@ -96,7 +96,7 @@ def is_parallel_passage_ref(elem_text):
 	return get_parallel_passage_ref(elem_text) != None
 
 def get_parallel_passage_ref(elem_text):
-	m = re.match(r"^\(\s*(['\w\s]+G\.\s*\d+:\d+(-\d+)?\s*;?)+\s*\)$", elem_text)
+	m = re.match(r"^\(\s*(['\w\s-]+G\.\s*\d+:\d+(-\d+)?\s*;?)+\s*\)$", elem_text)
 	return m and m.string
 
 def format_cross_ref(verse_text, origin):
