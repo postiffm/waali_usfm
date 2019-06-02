@@ -101,7 +101,7 @@ def get_parallel_passage_ref(elem_text):
 
 def format_cross_ref(verse_text, origin):
 	repl = lambda m: rf"\x + \xo {origin} \xt {m.group(0).strip('(').strip(')')} \x*"
-	return re.sub(r"\(\s*(['\w\s]+G\.\s*\d+:\d+(-\d+)?\s*;?)+\s*\)", repl, verse_text)
+	return re.sub(r"\(\s*(['\w\s-]+G\.\s*\d+:\d+(-\d+)?\s*;?)+\s*\)", repl, verse_text)
 
 def get_normalized_text(elem):
 	return normalize_space(get_text_rec(elem)).strip()
