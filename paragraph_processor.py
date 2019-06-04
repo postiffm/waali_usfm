@@ -59,6 +59,7 @@ class PatternFirstVerseWithoutNumber(object):
 		return not PatternBlank.Matches(book_name_set, bible_items, elem, cache) and \
 		    not has_heading_style(elem) and \
 		    not starts_with_verse_num(elem_text_rec) and \
+		    not PatternHeadingInSpan.Matches(book_name_set, bible_items, elem, cache) and \
 		    has_chapter_or_chapter_header_pattern(bible_items)
 
 	def Act(book_name_set, bible_items, elem):
@@ -164,9 +165,18 @@ class PatternFootNote(object):
 class PatternParallelPassage(object):
 	@cached
 	def Matches(book_name_set, bible_items, elem, cache):
-		return is_parallel_passage_ref(get_text_rec(elem).strip())
+		return is_passage_ref(get_text_rec(elem)) and has_parallel_passage_ref_style(elem)
 	def Act(book_name_set, bible_items, elem):
-		bible_items.append(ParallelPassageReference(get_parallel_passage_ref(get_text_rec(elem).strip()), elem))
+		bible_items.append(ParallelPassageReference(get_passage_ref(get_text_rec(elem)), elem))
+
+class PatternCrossRefOnNewLine(object):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
+		is_passage_ref(get_text_rec(elem)) and has_cross_ref_style(elem) and \
+			last_printable_item_is(bible_items, Verse)
+	def Act(book_name_set, bible_items, elem):
+		verse = last_printable_item()
+		verse.text = concat_lines(verse_text, get_normalized_text(elem))
 
 class PatternParagraph(object):
 	@cached
@@ -200,5 +210,5 @@ class PatternPsalmNumber(object):
 patterns = [PatternBlank, PatternBook, PatternChapter,
 	PatternFirstVerseWithoutNumber, PatternVerseWithNumber, PatternHeading, PatternHeadingInSpan,
 	PatternChapterInSpan, PatternVerseContinuation, PatternPageHeader,
-	PatternStartOfFootNotes, PatternFootNote, PatternParallelPassage, PatternParagraph,
+	PatternStartOfFootNotes, PatternFootNote, PatternParallelPassage, PatternCrossRefOnNewLine, PatternParagraph,
 	PatternParagraphContinuation, PatternPsalmNumber]

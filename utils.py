@@ -92,12 +92,18 @@ def get_footnote_text(elem):
 	return normalize_space(' '.join([t for t in elem.itertext()][1:]))
 
 
-def is_parallel_passage_ref(elem_text):
-	return get_parallel_passage_ref(elem_text) != None
+def is_passage_ref(elem_text):
+	return get_passage_ref(elem_text) != None
 
-def get_parallel_passage_ref(elem_text):
-	m = re.match(r"^\(\s*(['\w\s-]+G\.\s*\d+:\d+(-\d+)?\s*;?)+\s*\)$", elem_text)
+def get_passage_ref(elem_text):
+	m = re.match(r"^\(\s*(['\w\s-]+G\.\s*\d+:\d+(-\d+)?\s*;?)+\s*\)$", elem_text.strip())
 	return m and m.string
+
+def has_cross_ref_style(elem):
+	return has_style(elem, {'P358', 'P345'})
+
+def has_parallel_passage_ref_style(elem):
+	return has_style(elem, {'P203', 'P205'})
 
 def format_cross_ref(verse_text, origin):
 	repl = lambda m: rf"\x + \xo {origin} \xt {m.group(0).strip('(').strip(')')} \x*"
