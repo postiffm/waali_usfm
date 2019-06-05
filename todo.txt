@@ -3,7 +3,18 @@ Poetic line breaks.
 
 ################################
 
+search style definitions to make sure I've found all indentation styles and all header styles.
+
+################################
+
 1 Tim 5:18 style quotes.
 
 Is there a usfm tag for indented quotes? Is this like indenting long quotes in English instead of using quote marks?
 
+quotes and reference quotes.
+
+https://ubsicap.github.io/usfm/titles_headings/index.html#rq-rq
+
+Notice above that they use the poetic line mark \q as an indented quote.
+
+Mark 7:6-9 has a quote that spans multiple verses.

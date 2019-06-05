@@ -99,8 +99,8 @@ def get_passage_ref(elem_text):
 	m = re.match(r"^\(\s*(['\w\s-]+G\.\s*\d+:\d+(-\d+)?\s*;?)+\s*\)$", elem_text.strip())
 	return m and m.string
 
-def has_cross_ref_style(elem):
-	return has_style(elem, {'P358', 'P345'})
+def has_indented_style(elem):
+	return has_style(elem, {'P326', 'P358', 'P345'})
 
 def has_parallel_passage_ref_style(elem):
 	return has_style(elem, {'P203', 'P205'})

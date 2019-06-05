@@ -95,10 +95,16 @@ def is_verse_text_with_no_verse_number(book_name_set, bible_items, elem, cache):
 		not PatternBook.Matches(book_name_set, bible_items, elem, cache) and \
 		not PatternPsalmNumber.Matches(book_name_set, bible_items, elem, cache)
 
+# todo: check if some indented quotes are interrupted by a page header.
+# If so, this pattern will need to be changed to something like "PatternAppendableContinuation"
+# to handle both verses and quotes.
+# Or perhaps there's another way to appended together the parts cut by a page header,
+# like post processing.
 class PatternVerseContinuation(object):
 	@cached
 	def Matches(book_name_set, bible_items, elem, cache):
 		return is_verse_text_with_no_verse_number(book_name_set, bible_items, elem, cache) and \
+			not PatternIndentation.Matches(book_name_set, bible_items, elem, cache) and \
 			last_printable_item_is(bible_items, Verse)
 
 	def Act(book_name_set, bible_items, elem):
@@ -169,34 +175,27 @@ class PatternParallelPassage(object):
 	def Act(book_name_set, bible_items, elem):
 		bible_items.append(ParallelPassageReference(get_passage_ref(get_text_rec(elem)), elem))
 
-class PatternCrossRefOnNewLine(object):
+class PatternReferenceQuote(object):
 	@cached
 	def Matches(book_name_set, bible_items, elem, cache):
-		is_passage_ref(get_text_rec(elem)) and has_cross_ref_style(elem) and \
-			last_printable_item_is(bible_items, Verse)
+		return is_passage_ref(get_text_rec(elem)) and has_indented_style(elem)
 	def Act(book_name_set, bible_items, elem):
-		verse = last_printable_item()
-		verse.text = concat_lines(verse_text, get_normalized_text(elem))
+		bible_items.append(ReferenceQuote(get_text_rec(elem), elem))
 
 class PatternParagraph(object):
 	@cached
 	def Matches(book_name_set, bible_items, elem, cache):
 		return is_verse_text_with_no_verse_number(book_name_set, bible_items, elem, cache) and \
-			last_printable_item_is(bible_items, Heading)
+			not last_printable_item_is(bible_items, Verse) and \
+			not PatternFirstVerseWithoutNumber.Matches(book_name_set, bible_items, elem, cache) and \
+			not has_indented_style(elem) # not quote or reference quote
 	def Act(book_name_set, bible_items, elem):
 		text = normalize_space(get_text_rec(elem)).strip()
-		bible_items.append(Paragraph(text, elem)) 
-
-class PatternParagraphContinuation(object):
-	@cached
-	def Matches(book_name_set, bible_items, elem, cache):
-		return is_verse_text_with_no_verse_number(book_name_set, bible_items, elem, cache) and \
-			last_printable_item_is(bible_items, Paragraph) and \
-			not PatternHeadingInSpan.Matches(book_name_set, bible_items, elem, cache)
-	def Act(book_name_set, bible_items, elem):
-		text = normalize_space(get_text_rec(elem)).strip()
-		p = last_printable_item(bible_items)
-		p.text = concat_lines(p.text, text)
+		if last_printable_item_is(bible_items, Paragraph):
+			p = last_printable_item(bible_items)
+			p.text = concat_lines(p.text, text)
+		else:
+			bible_items.append(Paragraph(text, elem)) 
 
 class PatternPsalmNumber(object):
 	@cached
@@ -205,10 +204,17 @@ class PatternPsalmNumber(object):
 	def Act(book_name_set, bible_items, elem):
 		bible_items.append(Chapter(get_psalm_number(get_normalized_text(elem)), elem))
 
+class PatternIndentation(object):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
+		return has_indented_style(elem) and not PatternReferenceQuote.Matches(book_name_set, bible_items, elem, cache)
+	def Act(book_name_set, bible_items, elem):
+		bible_items.append(Indentation(get_normalized_text(elem), elem))
+
 # todo: what's this? a parallel reference in a footnote? ('Yiibu G. 25:7; Soribu G. 11:7)
 
 patterns = [PatternBlank, PatternBook, PatternChapter,
 	PatternFirstVerseWithoutNumber, PatternVerseWithNumber, PatternHeading, PatternHeadingInSpan,
 	PatternChapterInSpan, PatternVerseContinuation, PatternPageHeader,
-	PatternStartOfFootNotes, PatternFootNote, PatternParallelPassage, PatternCrossRefOnNewLine, PatternParagraph,
-	PatternParagraphContinuation, PatternPsalmNumber]
+	PatternStartOfFootNotes, PatternFootNote, PatternParallelPassage, PatternReferenceQuote, PatternParagraph,
+	PatternPsalmNumber, PatternIndentation]
