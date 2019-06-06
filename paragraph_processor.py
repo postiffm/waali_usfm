@@ -74,7 +74,8 @@ class PatternVerseWithNumber(object):
 	def Matches(book_name_set, bible_items, elem, cache):
 		return starts_with_verse_num(get_text_rec(elem)) and \
 		    not PatternChapterInSpan.Matches(book_name_set, bible_items, elem, cache) and \
-			not PatternChapter.Matches(book_name_set, bible_items, elem, cache)
+			not PatternChapter.Matches(book_name_set, bible_items, elem, cache) and \
+			not PatternHeadingAndChapterInSameParagraph.Matches(book_name_set, bible_items, elem, cache)
 
 	def Act(book_name_set, bible_items, elem):
 		# todo: handle Psalms style verse 1's where the v 1 has a number and follows a heading.
@@ -86,7 +87,8 @@ class PatternVerseWithNumber(object):
 
 @cached
 def is_verse_text_with_no_verse_number(book_name_set, bible_items, elem, cache):
-	return not PatternBlank.Matches(book_name_set, bible_items, elem, cache) and \
+	return not starts_with_verse_num(get_normalized_text(elem)) and \
+		not PatternBlank.Matches(book_name_set, bible_items, elem, cache) and \
 		not PatternPageHeader.Matches(book_name_set, bible_items, elem, cache) and \
 		not PatternStartOfFootNotes.Matches(book_name_set, bible_items, elem, cache) and \
 		not PatternFootNote.Matches(book_name_set, bible_items, elem, cache) and \
@@ -139,6 +141,22 @@ class PatternHeadingInSpan(object):
 			not is_int(get_normalized_text(elem)) # not a chapter in a span.
 	def Act(book_name_set, bible_items, elem):
 		add_or_append_heading(bible_items, elem)
+
+class PatternHeadingAndChapterInSameParagraph(object):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
+		children = elem.getchildren()
+		return len(children) > 1 and \
+			children[0].text != None and \
+			is_int(children[0].text.strip()) and \
+			any(children[1:], lambda child: has_heading_style(child) and child.text != None and not child.text.isspace())
+	def Act(book_name_set, bible_items, elem):
+		children = elem.getchildren()
+		chapter = int(children[0].text.strip())
+		heading = one_where(children[1:], lambda child: has_heading_style(child) and not child.text.isspace()).text
+		bible_items.append(Chapter(chapter, elem))
+		bible_items.append(Heading(heading, elem))
+
 
 class PatternChapterInSpan(object):
 	@cached
@@ -220,6 +238,6 @@ class PatternIndentation(object):
 
 patterns = [PatternBlank, PatternBook, PatternChapter,
 	PatternFirstVerseWithoutNumber, PatternVerseWithNumber, PatternHeading, PatternHeadingInSpan,
-	PatternChapterInSpan, PatternVerseContinuation, PatternPageHeader,
+	PatternHeadingAndChapterInSameParagraph, PatternChapterInSpan, PatternVerseContinuation, PatternPageHeader,
 	PatternStartOfFootNotes, PatternFootNote, PatternParallelPassage, PatternReferenceQuote, PatternParagraph,
 	PatternPsalmNumber, PatternIndentation]

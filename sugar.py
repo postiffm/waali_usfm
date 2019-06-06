@@ -13,3 +13,9 @@ def any(mylist, matcher):
 		if matcher(i):
 			return True
 	return False
+
+def one_where(mylist, matcher):
+	for i in mylist:
+		if matcher(i):
+			return i
+	return None

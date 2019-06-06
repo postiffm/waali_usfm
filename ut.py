@@ -26,7 +26,23 @@ class MyTests(unittest.TestCase):
         bible_items = []
         paragraph_processor.PatternIndentation.Act({}, bible_items, elem)
         self.assertTrue(len(bible_items) == 1)
-        
+
+    def test_blah(self):
+        xml = f"""           <text:p {xml_namespaces} text:style-name="P8">
+                <text:span text:style-name="T5">4</text:span>
+                <text:span text:style-name="T4">
+                    <text:tab/>
+                </text:span>
+                <text:span text:style-name="T5">Soolomong 'karichi-bera aning u na'mingbilii</text:span>
+            </text:p>"""
+
+        elem = ET.fromstring(xml)
+
+        children = elem.getchildren()
+        self.assertEqual(3, len(children))
+
+        self.assertEqual('4', children[0].text)
+
 
 if __name__ == '__main__':
     unittest.main()
