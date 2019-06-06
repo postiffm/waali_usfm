@@ -39,10 +39,14 @@ class PatternBlank(object):
 class PatternBook(object):
 	@cached
 	def Matches(book_name_set, bible_items, elem, cache):
-		return get_text_rec(elem) in book_name_set
+		text = get_normalized_text(elem).strip()
+		return text in book_name_set or \
+			text == "' Maatiu Gbangu" # Mathew has an anomolous space between the ' and first letter.
 
 	def Act(book_name_set, bible_items, elem):
-		bible_items.append(Book(get_text_rec(elem).strip(), elem))
+		text = get_normalized_text(elem).strip()
+		text = "'Maatiu Gbangu" if text == "' Maatiu Gbangu" else text
+		bible_items.append(Book(text, elem))
 
 class PatternChapter(object):
 	@cached

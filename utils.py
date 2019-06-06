@@ -73,7 +73,7 @@ def last_printable_item(bible_items):
 def is_page_header(text):
 	if text == None:
 		return False
-	x = re.search('^(?P<book_name>[\'a-zA-Z\\s]+)[\\d-]+', text)
+	x = re.search(r"^(?P<book_name>['a-zA-Z\-\s]+)[\d-]+", text)
 	return x != None and x.group('book_name').strip() in book_info.book_name_set
 
 
