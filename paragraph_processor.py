@@ -97,7 +97,8 @@ def is_verse_text_with_no_verse_number(book_name_set, bible_items, elem, cache):
 		not PatternParallelPassage.Matches(book_name_set, bible_items, elem, cache) and \
 		not PatternHeadingInSpan.Matches(book_name_set, bible_items, elem, cache) and \
 		not PatternBook.Matches(book_name_set, bible_items, elem, cache) and \
-		not PatternPsalmNumber.Matches(book_name_set, bible_items, elem, cache)
+		not PatternPsalmNumber.Matches(book_name_set, bible_items, elem, cache) and \
+		not PatternReferenceQuote.Matches(book_name_set, bible_items, elem, cache)
 
 # todo: check if some indented quotes are interrupted by a page header.
 # If so, this pattern will need to be changed to something like "PatternAppendableContinuation"
