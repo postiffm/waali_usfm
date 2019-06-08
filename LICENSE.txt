@@ -1,0 +1,12 @@
+The Holy Bible In Waali
+=======================
+
+All forms of the Bible text are under the below copyright, including context.xml and content_indented_no_noise.xml:
+
+(c) 2009 Bibles International
+
+
+waali_usfm
+==========
+
+This work other than the Bible text licensed under a Creative Commons Attribution 4.0 International License.
