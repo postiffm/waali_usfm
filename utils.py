@@ -120,3 +120,12 @@ def is_psalm_number(text):
 
 def get_psalm_number(text):
 	return int(re.search(r"'Yienii (?P<num>\d+)", text).group('num'))
+
+def verse_starts_indented(elem):
+	# elem.text gets the child text up to the first child element.
+	children = elem.getchildren()
+	return is_int(elem.text.strip()) and \
+		len(children) >= 2 and \
+		children[0].tag.endswith('}tab') and \
+		children[0].tail.isspace() and \
+		children[1].tag.endswith('}tab')

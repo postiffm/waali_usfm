@@ -27,22 +27,26 @@ class MyTests(unittest.TestCase):
         paragraph_processor.PatternIndentation.Act({}, bible_items, elem)
         self.assertTrue(len(bible_items) == 1)
 
-    def test_blah(self):
-        xml = f"""           <text:p {xml_namespaces} text:style-name="P8">
-                <text:span text:style-name="T5">4</text:span>
-                <text:span text:style-name="T4">
-                    <text:tab/>
-                </text:span>
-                <text:span text:style-name="T5">Soolomong 'karichi-bera aning u na'mingbilii</text:span>
-            </text:p>"""
+    def test_verse_starts_indented_True_case(self):
+        elem = ET.fromstring(f"""
+            <text:p text:style-name="P186" {xml_namespaces}>7
+                <text:tab/>
+                <text:tab/>
+                Bang 'puohimo Ngming'puohibu kpali, a di niba nuori 'kuubuhi ang i 'wulibuhi bang 'wuno. 
+                <text:s/>
+                (Ai'zeeya G. 29:13)</text:p>
+            """)
+        self.assertTrue(utils.verse_starts_indented(elem))
 
-        elem = ET.fromstring(xml)
-
-        children = elem.getchildren()
-        self.assertEqual(3, len(children))
-
-        self.assertEqual('4', children[0].text)
-
+    def test_verse_starts_indented_False_case(self):
+        elem = ET.fromstring(f"""
+            <text:p text:style-name="P186" {xml_namespaces}>7
+                <text:tab/>
+                Bang 'puohimo Ngming'puohibu kpali, a di niba nuori 'kuubuhi ang i 'wulibuhi bang 'wuno. 
+                <text:s/>
+                (Ai'zeeya G. 29:13)</text:p>
+            """)
+        self.assertFalse(utils.verse_starts_indented(elem))
 
 if __name__ == '__main__':
     unittest.main()

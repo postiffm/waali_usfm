@@ -33,13 +33,15 @@ class Chapter(Printable):
 		return f'\\c {self.number}'
 
 class Verse(Printable):
-	def __init__(self, number, text, elem):
+	def __init__(self, number, text, elem, starts_indented=False):
 		self.number = number
 		self.text = text
 		self.elem = elem
+		self.starts_indented = starts_indented
 
 	def __str__(self):
-		return f"\\v {self.number} {self.text}"
+		q = r' \q' if self.starts_indented else ''
+		return f"\\v {self.number}{q} {self.text}"
 
 class FootNote:
 	def __init__(self, chapter_num, verse_num, text, elem):

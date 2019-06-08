@@ -18,3 +18,42 @@ https://ubsicap.github.io/usfm/titles_headings/index.html#rq-rq
 Notice above that they use the poetic line mark \q as an indented quote.
 
 Mark 7:6-9 has a quote that spans multiple verses.
+
+
+###########################
+
+P333, P347, P360, P328, P325, P323 are indented. Really need to search all style declarations to find indentation.
+
+			<text:p text:style-name="P188">3
+				<text:tab/>
+				Bang 'yiene 'Moosis, Naangmini tungtuna 'yienii ni, aning a Pipolii 'yienii ni a yeli:</text:p>
+			<text:p text:style-name="P333">I tuma iye bera a i sielii, Daana Naangmini Kpiengu Jaa</text:p>
+
+
+
+
+			<text:p text:style-name="P188">24
+				<text:tab/>
+				'Bojung,</text:p>
+			<text:p text:style-name="P347">Inggbani jaa 'woniye moo. 
+				<text:s/></text:p>
+			<text:p text:style-name="P360">Ka ninsaalaa girima jaa 'woning mopora. 
+				<text:s/></text:p>
+			<text:p text:style-name="P360">A moo mang 'kong, ka a mopora 'le.</text:p>
+
+
+			<text:p text:style-name="P188">10
+				<text:tab/>
+				'Bojung,</text:p>
+			<text:p text:style-name="P328">Unani ang na buora 'nyivori, a buora ka u nye 'be-suunhi, u ngmaa u jinti a 'yi beu yelibung, a pogi u nuori a 'yi 'girii ngmaabung.</text:p>
+
+
+			<text:p text:style-name="P184">3
+				<text:tab/>
+				Bila 'puoring Soolomong daang tungyeng ka ba yeli Taiyer naa Hairam ngaang:</text:p>
+			<text:p text:style-name="P325">Bila ni ing daang i 'ku n ba 'Deevid, a tuoluu 'siid-er daari ka u me 'deu kpiera ni, i bila 'ku n ming.</text:p>
+
+
+			<text:p text:style-name="P182">
+				<text:s/>Ka Jeekob daang buong u 'bi-daba a yeli: </text:p>
+			<text:p text:style-name="P323">Ye laanhi ye miihi lang taa ka n yeliye yela ang na pagiye a 'be-baahii 'puong.</text:p>

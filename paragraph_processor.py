@@ -83,7 +83,8 @@ class PatternVerseWithNumber(object):
 		verse_num = get_verse_num(elem_text_rec)
 		verse_text = elem_text_rec[len(str(verse_num)):].strip()
 		verse_text = normalize_space(verse_text)
-		bible_items.append(Verse(verse_num, verse_text, elem))
+		starts_indented = verse_starts_indented(elem)
+		bible_items.append(Verse(verse_num, verse_text, elem, starts_indented))
 
 @cached
 def is_verse_text_with_no_verse_number(book_name_set, bible_items, elem, cache):
@@ -121,7 +122,7 @@ class PatternVerseContinuation(object):
 
 def add_or_append_heading(bible_items, elem):
 	text = get_normalized_text(elem)
-	if isinstance(last(bible_items), Heading):
+	if len(bible_items) > 0 and isinstance(last(bible_items), Heading):
 		last(bible_items).text = concat_lines(last(bible_items).text, text)
 	else:
 		bible_items.append(Heading(text, elem))
