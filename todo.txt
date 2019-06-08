@@ -22,6 +22,13 @@ Mark 7:6-9 has a quote that spans multiple verses.
 
 ###########################
 
+diff quality checker tool
+
+use ndiff in order to compare each verse
+https://stackoverflow.com/questions/17904097/python-difference-between-two-strings
+
+###########################
+
 P333, P347, P360, P328, P325, P323 are indented. Really need to search all style declarations to find indentation.
 
 			<text:p text:style-name="P188">3
