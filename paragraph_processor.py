@@ -72,9 +72,11 @@ class PatternFirstVerseWithoutNumber(object):
 class PatternVerseWithNumber(object):
 	@cached
 	def Matches(book_name_set, bible_items, elem, cache):
+		text = get_normalized_text(elem)
 		return starts_with_verse_num(get_text_rec(elem)) and \
 		    not PatternChapterInSpan.Matches(book_name_set, bible_items, elem, cache) and \
 			not PatternChapter.Matches(book_name_set, bible_items, elem, cache) and \
+		    not is_passage_ref_part(text) and \
 			not PatternHeadingAndChapterInSameParagraph.Matches(book_name_set, bible_items, elem, cache)
 
 	def Act(book_name_set, bible_items, elem):

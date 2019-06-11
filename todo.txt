@@ -8,8 +8,11 @@ if an indented part follows a previous indented part, is it a new \q line or sho
 
 1 Na'mine G. 10:12
 
-its a fragement.
+its a fragement
+* merge with previous part.
 it starts with a number
+* Done: regex good? yes
+* make verse-with-number pattern not confused with this.
 
 ###########################
 
