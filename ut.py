@@ -48,5 +48,8 @@ class MyTests(unittest.TestCase):
             """)
         self.assertFalse(utils.verse_starts_indented(elem))
 
+    def test_is_passage_ref_fragment(self):
+        self.assertTrue(utils.is_passage_ref_fragment("1 Na'mine G. 10:12)"))
+
 if __name__ == '__main__':
     unittest.main()

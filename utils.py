@@ -2,6 +2,7 @@ import re
 from sugar import *
 from model import *
 from book_info import *
+import style_sets
 
 def get_text_rec(elem):
 	parts = []
@@ -100,7 +101,8 @@ def get_passage_ref(elem_text):
 	return m and m.string
 
 def has_indented_style(elem):
-	return has_style(elem, {'P326', 'P358', 'P345'})
+	#return has_style(elem, {'P326', 'P358', 'P345'})
+	return has_style(elem, style_sets.indented_paragraph)
 
 def has_parallel_passage_ref_style(elem):
 	return has_style(elem, {'P203', 'P205'})
