@@ -73,10 +73,11 @@ class PatternVerseWithNumber(object):
 	@cached
 	def Matches(book_name_set, bible_items, elem, cache):
 		text = get_normalized_text(elem)
+		# check is_passage_ref_end_part because a reference part can also start with a number.
 		return starts_with_verse_num(get_text_rec(elem)) and \
 		    not PatternChapterInSpan.Matches(book_name_set, bible_items, elem, cache) and \
 			not PatternChapter.Matches(book_name_set, bible_items, elem, cache) and \
-		    not is_passage_ref_part(text) and \
+		    not is_passage_ref_end_part(text) and \
 			not PatternHeadingAndChapterInSameParagraph.Matches(book_name_set, bible_items, elem, cache)
 
 	def Act(book_name_set, bible_items, elem):
@@ -102,7 +103,8 @@ def is_verse_text_with_no_verse_number(book_name_set, bible_items, elem, cache):
 		not PatternParallelPassage.Matches(book_name_set, bible_items, elem, cache) and \
 		not PatternHeadingInSpan.Matches(book_name_set, bible_items, elem, cache) and \
 		not PatternBook.Matches(book_name_set, bible_items, elem, cache) and \
-		not PatternPsalmNumber.Matches(book_name_set, bible_items, elem, cache)
+		not PatternPsalmNumber.Matches(book_name_set, bible_items, elem, cache) and \
+		not PatternCrossReferenceEndPart.Matches(book_name_set, bible_items, elem, cache)
 
 # todo: check if some indented quotes are interrupted by a page header.
 # If so, this pattern will need to be changed to something like "PatternAppendableContinuation"
@@ -200,6 +202,14 @@ class PatternParallelPassage(object):
 	def Act(book_name_set, bible_items, elem):
 		bible_items.append(ParallelPassageReference(get_passage_ref(get_text_rec(elem)), elem))
 
+class PatternCrossReferenceEndPart(object):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
+		return is_passage_ref_end_part(get_text_rec(elem)) and last_printable_item_is(bible_items, VersePart)
+	def Act(book_name_set, bible_items, elem):
+		last_printable = last_printable_item(bible_items)
+		last_printable.text = concat_lines(last_printable.text, get_normalized_text(elem))
+
 class PatternParagraph(object):
 	@cached
 	def Matches(book_name_set, bible_items, elem, cache):
@@ -225,7 +235,7 @@ class PatternPsalmNumber(object):
 class PatternIndentation(object):
 	@cached
 	def Matches(book_name_set, bible_items, elem, cache):
-		return has_indented_style(elem)
+		return has_indented_style(elem) and not PatternCrossReferenceEndPart.Matches(book_name_set, bible_items, elem, cache)
 	def Act(book_name_set, bible_items, elem):
 		bible_items.append(Indentation(get_normalized_text(elem), elem))
 
@@ -234,5 +244,5 @@ class PatternIndentation(object):
 patterns = [PatternBlank, PatternBook, PatternChapter,
 	PatternFirstVerseWithoutNumber, PatternVerseWithNumber, PatternHeading, PatternHeadingInSpan,
 	PatternHeadingAndChapterInSameParagraph, PatternChapterInSpan, PatternVerseContinuation, PatternPageHeader,
-	PatternStartOfFootNotes, PatternFootNote, PatternParallelPassage, PatternParagraph,
+	PatternStartOfFootNotes, PatternFootNote, PatternParallelPassage, PatternCrossReferenceEndPart, PatternParagraph,
 	PatternPsalmNumber, PatternIndentation]

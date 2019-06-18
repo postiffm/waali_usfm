@@ -48,8 +48,11 @@ class MyTests(unittest.TestCase):
             """)
         self.assertFalse(utils.verse_starts_indented(elem))
 
-    def test_is_passage_ref_part(self):
-        self.assertTrue(utils.is_passage_ref_part("1 Na'mine G. 10:12)"))
+    def test_is_passage_ref_end_part(self):
+        self.assertTrue(utils.is_passage_ref_end_part("1 Na'mine G. 10:12)"))
+
+    def test_is_passage_ref_end_part_when_whole_refernce_present(self):
+        self.assertFalse(utils.is_passage_ref_end_part("(1 Na'mine G. 10:12)"))
 
 if __name__ == '__main__':
     unittest.main()

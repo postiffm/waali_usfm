@@ -100,8 +100,9 @@ def get_passage_ref(elem_text):
 	m = re.match(r"^\(\s*(['\w\s-]+G\.\s*\d+:\d+(-\d+)?\s*;?)+\s*\)$", elem_text.strip())
 	return m and m.string
 
-def is_passage_ref_part(elem_text):
-	return not elem_text.isspace() and re.match(r"^\(?(['\w\s-]+G\.\s*\d+:\d+(-\d+)?\s*;?)+\)?$", elem_text.strip())
+def is_passage_ref_end_part(elem_text):
+	return not elem_text.isspace() and \
+		re.match(r"^(['\w\s-]+G\.\s*\d+:\d+(-\d+)?\s*;?)+\)?$", elem_text.strip())
 
 def has_indented_style(elem):
 	#return has_style(elem, {'P326', 'P358', 'P345'})
