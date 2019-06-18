@@ -79,9 +79,9 @@ class Indentation(Printable):
 		return rf"\q {self.text}"
 
 # https://ubsicap.github.io/usfm/titles_headings/index.html#rq-rq
-class ReferenceQuote(Printable):
+class ParallelPassageRef(Printable):
 	def __init__(self, text, elem):
 		self.elem = elem
 		self.text = text
 	def __str__(self):
-		return rf"\rq {self.text}"
+		return rf"\r {self.text}"
