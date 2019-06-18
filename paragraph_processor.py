@@ -102,8 +102,7 @@ def is_verse_text_with_no_verse_number(book_name_set, bible_items, elem, cache):
 		not PatternParallelPassage.Matches(book_name_set, bible_items, elem, cache) and \
 		not PatternHeadingInSpan.Matches(book_name_set, bible_items, elem, cache) and \
 		not PatternBook.Matches(book_name_set, bible_items, elem, cache) and \
-		not PatternPsalmNumber.Matches(book_name_set, bible_items, elem, cache) and \
-		not PatternParallelPassageRef.Matches(book_name_set, bible_items, elem, cache)
+		not PatternPsalmNumber.Matches(book_name_set, bible_items, elem, cache)
 
 # todo: check if some indented quotes are interrupted by a page header.
 # If so, this pattern will need to be changed to something like "PatternAppendableContinuation"
@@ -201,13 +200,6 @@ class PatternParallelPassage(object):
 	def Act(book_name_set, bible_items, elem):
 		bible_items.append(ParallelPassageReference(get_passage_ref(get_text_rec(elem)), elem))
 
-class PatternParallelPassageRef(object):
-	@cached
-	def Matches(book_name_set, bible_items, elem, cache):
-		return is_passage_ref(get_text_rec(elem)) and has_indented_style(elem)
-	def Act(book_name_set, bible_items, elem):
-		bible_items.append(ParallelPassageRef(get_text_rec(elem), elem))
-
 class PatternParagraph(object):
 	@cached
 	def Matches(book_name_set, bible_items, elem, cache):
@@ -233,7 +225,7 @@ class PatternPsalmNumber(object):
 class PatternIndentation(object):
 	@cached
 	def Matches(book_name_set, bible_items, elem, cache):
-		return has_indented_style(elem) and not PatternParallelPassageRef.Matches(book_name_set, bible_items, elem, cache)
+		return has_indented_style(elem)
 	def Act(book_name_set, bible_items, elem):
 		bible_items.append(Indentation(get_normalized_text(elem), elem))
 
@@ -242,5 +234,5 @@ class PatternIndentation(object):
 patterns = [PatternBlank, PatternBook, PatternChapter,
 	PatternFirstVerseWithoutNumber, PatternVerseWithNumber, PatternHeading, PatternHeadingInSpan,
 	PatternHeadingAndChapterInSameParagraph, PatternChapterInSpan, PatternVerseContinuation, PatternPageHeader,
-	PatternStartOfFootNotes, PatternFootNote, PatternParallelPassage, PatternParallelPassageRef, PatternParagraph,
+	PatternStartOfFootNotes, PatternFootNote, PatternParallelPassage, PatternParagraph,
 	PatternPsalmNumber, PatternIndentation]
