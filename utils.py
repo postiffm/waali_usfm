@@ -111,7 +111,16 @@ def has_parallel_passage_ref_style(elem):
 	return has_style(elem, {'P203', 'P205'})
 
 def format_cross_ref(verse_text, origin):
-	repl = lambda m: rf"\x + \xo {origin} \xt {m.group(0).strip('(').strip(')')} \x*"
+	# For the purposes of the Scripture App Builder, we don't want references that turn
+	# into superscripts (which are not clickable in the Scripture app). We want the
+	# full reference to appear inline within the verse text. Therefor we are using
+	# \rq (inline quote reference) instead of \x (cross reference).
+	# USFM seems to have an unfortunate tangling of semantics and presentation.
+
+	# \x style would be done as follows:
+	# repl = lambda m: rf"\x + \xo {origin} \xt {m.group(0).strip('(').strip(')')} \x*"
+
+	repl = lambda m: rf"\rq {m.group(0).strip('(').strip(')')}\rq*"
 	return re.sub(r"\(\s*(['\w\s-]+G\.\s*\d+:\d+(-\d+)?\s*;?)+\s*\)", repl, verse_text)
 
 def get_normalized_text(elem):

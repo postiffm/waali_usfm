@@ -65,11 +65,14 @@ def hook_up_footnotes(bible_items):
 
 def format_cross_references(bible_items):
 	current_chapter = None
+	current_verse = 0
 	for item in bible_items:
 		if isinstance(item, Chapter):
-			current_chapter = item.number
-		if isinstance(item, Verse):
-			item.text = format_cross_ref(item.text, f'{current_chapter}:{item.number}')
+			current_chapter = item.number = item.number
+		if isinstance(item, VersePart):
+			if isinstance(item, Verse):
+				current_verse = item.number
+			item.text = format_cross_ref(item.text, f'{current_chapter}:{current_verse}')
 	return bible_items
 
 	#todo: make sure to handle range footnotes. e.g. 45:10-11 

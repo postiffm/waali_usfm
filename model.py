@@ -3,6 +3,8 @@ import book_info
 
 class Printable(object):
 	pass
+class VersePart(object):
+	pass
 
 class Book(Printable):
 	def __init__(self, name, elem):
@@ -32,7 +34,7 @@ class Chapter(Printable):
 	def __str__(self):
 		return f'\\c {self.number}'
 
-class Verse(Printable):
+class Verse(Printable, VersePart):
 	def __init__(self, number, text, elem, starts_indented=False):
 		self.number = number
 		self.text = text
@@ -62,7 +64,7 @@ class ParallelPassageReference(Printable):
 	def __str__(self):
 		return f"\\r {self.text}"
 
-class Paragraph(Printable):
+class Paragraph(Printable, VersePart):
 	def __init__(self, text, elem):
 		self.elem = elem
 		self.text = text
@@ -71,7 +73,7 @@ class Paragraph(Printable):
 		return rf"\p {self.text}"
 
 # corresponds to either poetic line or indented quote, both of which are represented by \q in usfm.
-class Indentation(Printable):
+class Indentation(Printable, VersePart):
 	def __init__(self, text, elem):
 		self.elem = elem
 		self.text = text
