@@ -12,7 +12,7 @@ its a fragement
 * merge with previous part.
 it starts with a number
 * Done: regex good? yes
-* make verse-with-number pattern not confused with this.
+* Done: make verse-with-number pattern not confused with this.
 
 ###########################
 
@@ -21,6 +21,16 @@ diff quality checker tool
 use ndiff in order to compare each verse
 https://stackoverflow.com/questions/17904097/python-difference-between-two-strings
 
+############################
+
+Poetic line breaks that aren't indented. (this may have to wait till version 2.0 of the usfm)
+
+For example Psalm 1:3:
+
+3 U na 'woniye dau bang seli konboori nuoring.
+Ung mang ngmana ngmama u ngmangbu wagiring.
+U vaari ming ba mang juoli.
+U yeli-iruu jaa mang tariye 'ningbiri.
 
 ################################
 
