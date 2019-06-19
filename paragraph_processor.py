@@ -235,7 +235,9 @@ class PatternPsalmNumber(object):
 class PatternIndentation(object):
 	@cached
 	def Matches(book_name_set, bible_items, elem, cache):
-		return has_indented_style(elem) and not PatternCrossReferenceEndPart.Matches(book_name_set, bible_items, elem, cache)
+		return has_indented_style(elem) and \
+			not PatternCrossReferenceEndPart.Matches(book_name_set, bible_items, elem, cache) and \
+			not PatternHeadingInSpan.Matches(book_name_set, bible_items, elem, cache)
 	def Act(book_name_set, bible_items, elem):
 		bible_items.append(Indentation(get_normalized_text(elem), elem))
 
