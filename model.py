@@ -81,6 +81,7 @@ class Indentation(Printable, VersePart):
 		return rf"\q {self.text}"
 
 # https://ubsicap.github.io/usfm/titles_headings/index.html#rq-rq
+# todo: doesn't look like the below class is used. Delete if not used.
 class ParallelPassageRef(Printable):
 	def __init__(self, text, elem):
 		self.elem = elem
