@@ -16,6 +16,12 @@ class Verse:
 		self.number = number
 		self.text = text
 
+def get_starting_number(text):
+	x = re.search('^(?P<num>\\d+)', text)
+	number_string = x.group('num')
+	number = int(number_string)
+	return number
+
 def load_book(file_provider):
 	book = None
 	current_chapter = None
@@ -28,17 +34,15 @@ def load_book(file_provider):
 		if tag == 'h':
 			book = Book(text)
 		elif tag == 'c':
-			number = int(text)
+			number = get_starting_number(text)
 			current_chapter = Chapter(number)
 			book.chapters[number] = current_chapter
 		elif tag == 'v':
-			x = re.search('^(?P<num>\\d+)', text)
-			number_string = x.group('num')
-			number = int(number_string)
-			text = text[len(number_string) + 1:]
+			number = get_starting_number(text)
+			text = text[len(str(number)) + 1:]
 			current_verse = Verse(number, text)
 			current_chapter.verses[number] = current_verse
-		elif tag == 'q' or tag == 'p':
+		elif current_verse and (tag == 'q' or tag == 'p'):
 			current_verse.text = current_verse.text + ' ' + text
 	return book
 
@@ -64,10 +68,43 @@ class FileProvider:
 		with open(self.path, 'r') as f:
 			return f.readlines()
 
+def diff_subtract_chapter(minuend, subtrahend, subtrahend_name):
+	missing = []
+	for verse in minuend.verses:
+		if not verse in subtrahend.verses:
+			missing.append(f'verse {verse} missing from {subtrahend_name}')
+
+	return missing
+
+def diff_subtract_book(minuend, subtrahend, subtrahend_name):
+	missing = []
+	#print(minuend)
+	for chapter in minuend.chapters:
+		if not chapter in subtrahend.chapters:
+			missing.append(f'chapter {chapter} missing from {subtrahend_name}')
+		else:
+			missing = missing + diff_subtract_chapter(minuend.chapters[chapter], subtrahend.chapters[chapter], subtrahend_name + "." + str(chapter))
+	return missing
+
+def diff_subtract_bible(minuend, subtrahend, subtrahend_name):
+	missing = []
+
+	for book_name in minuend:
+		if not book_name in subtrahend:
+			missing.append(f'book {book_name} misisng from {subtrahend_name}.')
+		else:
+			#print(minuend[book_name])
+			missing = missing + diff_subtract_book(minuend[book_name], subtrahend[book_name], subtrahend_name + "." + book_name)
+	return missing
+
 def main():
 	# load a model of every book, chapter, verse.
 	ocr_bible = load_bible(FilesProvider('../usfm'))
 	recovered_bible = load_bible(FilesProvider('../usfm_out_rev2'))
+
+	missing = diff_subtract_bible(ocr_bible, recovered_bible, "RecoverdBible")
+
+	print("\n".join(missing))
 
 	# if needed to facilitate the diff library, remove all newlines from every verse.
 	# Flag missing or extra books, chapters, verses.
