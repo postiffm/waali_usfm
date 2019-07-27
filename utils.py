@@ -35,7 +35,14 @@ def starts_with_verse_num(text):
 	x = re.search('^\\s*\\d+($|[^:\\d])', text)
 	return x != None
 
+def starts_with_num_followed_by_non_number(text):
+	x = re.search(r'^\s*\d+\s*[^\s\d]', text)
+	return x != None
+
 def get_verse_num(text):
+	return get_starting_num(text)
+
+def get_starting_num(text):
 	x = re.search('^\\s*(?P<num>\\d+)', text)
 	return None if x == None else int(x.group('num'))
 

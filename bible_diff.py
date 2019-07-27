@@ -99,7 +99,7 @@ def diff_subtract_bible(minuend, subtrahend, subtrahend_name):
 
 def main():
 	# load a model of every book, chapter, verse.
-	ocr_bible = load_bible(FilesProvider('../usfm'))
+	ocr_bible = load_bible(FilesProvider('../usfm_ocr_modified_for_compare'))
 	recovered_bible = load_bible(FilesProvider('../usfm_out_rev2'))
 
 	missing = diff_subtract_bible(ocr_bible, recovered_bible, "RecoverdBible")

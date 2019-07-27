@@ -78,7 +78,8 @@ class PatternVerseWithNumber(object):
 		    not PatternChapterInSpan.Matches(book_name_set, bible_items, elem, cache) and \
 			not PatternChapter.Matches(book_name_set, bible_items, elem, cache) and \
 		    not is_passage_ref_end_part(text) and \
-			not PatternHeadingAndChapterInSameParagraph.Matches(book_name_set, bible_items, elem, cache)
+			not PatternHeadingAndChapterInSameParagraph.Matches(book_name_set, bible_items, elem, cache) and \
+			not PatternHeadingAndChapterInSameParagraph2.Matches(book_name_set, bible_items, elem, cache)
 
 	def Act(book_name_set, bible_items, elem):
 		# todo: handle Psalms style verse 1's where the v 1 has a number and follows a heading.
@@ -161,6 +162,19 @@ class PatternHeadingAndChapterInSameParagraph(object):
 		bible_items.append(Chapter(chapter, elem))
 		bible_items.append(Heading(heading, elem))
 
+class PatternHeadingAndChapterInSameParagraph2(object):
+	@cached
+	def Matches(book_name_set, bible_items, elem, cache):
+		elem_text_rec = get_text_rec(elem)
+		return has_style(elem, 'P210') and \
+			starts_with_num_followed_by_non_number(elem_text_rec) and \
+			not PatternChapterInSpan.Matches(book_name_set, bible_items, elem, cache)
+	def Act(book_name_set, bible_items, elem):
+		elem_text_rec = get_text_rec(elem)
+		chapter_num = get_starting_num(elem_text_rec)
+		heading_text = elem_text_rec[len(str(chapter_num)):].strip()
+		bible_items.append(Chapter(chapter_num, elem))
+		bible_items.append(Heading(heading_text, elem))
 
 class PatternChapterInSpan(object):
 	@cached
@@ -246,6 +260,6 @@ class PatternIndentation(object):
 
 patterns = [PatternBlank, PatternBook, PatternChapter,
 	PatternFirstVerseWithoutNumber, PatternVerseWithNumber, PatternHeading, PatternHeadingInSpan,
-	PatternHeadingAndChapterInSameParagraph, PatternChapterInSpan, PatternVerseContinuation, PatternPageHeader,
+	PatternHeadingAndChapterInSameParagraph, PatternHeadingAndChapterInSameParagraph2, PatternChapterInSpan, PatternVerseContinuation, PatternPageHeader,
 	PatternStartOfFootNotes, PatternFootNote, PatternParallelPassage, PatternCrossReferenceEndPart, PatternParagraph,
 	PatternPsalmNumber, PatternIndentation]
