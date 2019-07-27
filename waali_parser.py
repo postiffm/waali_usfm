@@ -7,6 +7,8 @@ from model import *
 from sugar import *
 from utils import format_cross_ref
 
+import re
+
 # https://ubsicap.github.io/usfm/
 
 def parse(content_xml_file):
@@ -58,7 +60,10 @@ def hook_up_footnotes(bible_items):
 			try:
 				# remove the "try" once the issue with getting the chapters of Psalms resolved.
 				verse = verse_lookup[item.chapter_num][item.verse_num]
-				verse.text = verse.text.replace('*', f'\\f + \\fr {item.chapter_num}:{item.verse_num} {item.text} \\f*', 1)
+				footnote_usfm = fr'\\f + \\fr {item.chapter_num}:{item.verse_num} {item.text} \\f*'
+				# (?<!\\f) is a lookbehind that prevents matches of \f*. We don't want
+				# the tail end of a previous footnote to be replaced by a subsequent footnote.
+				verse.text = re.sub(r'(?<!\\f)\*', footnote_usfm, verse.text, 1)
 			except Exception as e:
 				pass
 	return bible_items

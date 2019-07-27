@@ -1,5 +1,10 @@
 
 
+What to do about this footnote that lost in Lamentations 2:1?:
+A gberi 'kogo la u 'layiri daga ni.
+
+There isn't a second asterisk to mark where in the verse teh footntoe corresponds to. Should it just be appended to the end?
+
 ###########################
 
 if an indented part follows a previous indented part, is it a new \q line or should it be appended to the previous \q line?
