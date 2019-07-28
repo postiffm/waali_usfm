@@ -166,7 +166,7 @@ class PatternHeadingAndChapterInSameParagraph2(object):
 	@cached
 	def Matches(book_name_set, bible_items, elem, cache):
 		elem_text_rec = get_text_rec(elem)
-		return has_style(elem, 'P210') and \
+		return (has_style(elem, 'P210') or has_style(elem, 'P211')) and \
 			starts_with_num_followed_by_non_number(elem_text_rec) and \
 			not PatternChapterInSpan.Matches(book_name_set, bible_items, elem, cache)
 	def Act(book_name_set, bible_items, elem):
