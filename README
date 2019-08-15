@@ -1,0 +1,6 @@
+How to Run
+
+% python3 run.py
+
+The program will print a message telling you where the input is from
+and where the output goes.
