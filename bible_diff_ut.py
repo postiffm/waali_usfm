@@ -21,7 +21,7 @@ class MyTests(unittest.TestCase):
     	book1 = MockFileProvider(r"""
 \id GEN
 \h book one
-\mt book one
+\mt1 book one
 \toc3 GEN
 \c 1
 \v 1 verse one
@@ -33,11 +33,11 @@ class MyTests(unittest.TestCase):
     	book2 = MockFileProvider(r"""
 \id ABC
 \h book two
-\mt book two
+\mt1 book two
 \toc3 ABC
 \c 1
 \v 1 blah blah
-\q a quote
+\q1 a quote
 \r parallel passage ref
 \c 2
 \v 1 verse one of chapter two

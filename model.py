@@ -15,7 +15,9 @@ class Book(Printable):
 		book_id = book_info.books[self.name]['id']
 		return f"""\\id {book_id}
 \\h {self.name}
-\\mt {self.name}
+\\mt1 {self.name}
+\\toc1 {self.name}
+\\toc2 {self.name}
 \\toc3 {book_id}"""
 
 class Heading(Printable):
@@ -42,7 +44,7 @@ class Verse(Printable, VersePart):
 		self.starts_indented = starts_indented
 
 	def __str__(self):
-		q = r' \q' if self.starts_indented else ''
+		q = r' \q1' if self.starts_indented else ''
 		return f"\\v {self.number}{q} {self.text}"
 
 class FootNote:
@@ -72,13 +74,13 @@ class Paragraph(Printable, VersePart):
 	def __str__(self):
 		return rf"\p {self.text}"
 
-# corresponds to either poetic line or indented quote, both of which are represented by \q in usfm.
+# corresponds to either poetic line or indented quote, both of which are represented by \q1 in usfm.
 class Indentation(Printable, VersePart):
 	def __init__(self, text, elem):
 		self.elem = elem
 		self.text = text
 	def __str__(self):
-		return rf"\q {self.text}"
+		return rf"\q1 {self.text}"
 
 # https://ubsicap.github.io/usfm/titles_headings/index.html#rq-rq
 # todo: doesn't look like the below class is used. Delete if not used.
